@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ratio-app-spot
+  namespace: ratio-app
+  labels:
+    app: ratio-app
+    tier: spot
+spec:
+  replicas: 8
+  selector:
+    matchLabels:
+      app: ratio-app
+      tier: spot
+  template:
+    metadata:
+      labels:
+        app: ratio-app
+        tier: spot
+    spec:
+      nodeSelector:
+        capacity-type: spot
+      tolerations:
+      - key: "cloud.google.com/gke-spot"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      containers:
+      - name: hpa-example
+        image: registry.k8s.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+            memory: 100Mi
+          requests:
+            cpu: 200m
+            memory: 50Mi
